@@ -1,0 +1,79 @@
+项目技术文档：Web3 智能钱包仪表盘
+
+1. 项目概述
+
+本项目旨在开发一个基于 React + Vite 的 Web3 钱包仪表盘应用。核心功能包括连接 MetaMask 钱包、显示钱包基本信息、查询并展示交易历史以及代币余额。
+
+2. 技术栈
+
+前端框架: React.js
+
+构建工具: Vite
+
+样式库: Tailwind CSS (推荐，用于快速构建响应式 UI)
+
+Web3 库: Ethers.js 或 Web3.js
+
+用途: 与以太坊区块链交互，如获取账户、余额和处理签名。
+
+API: Etherscan API
+
+用途: 获取历史交易记录和 ERC-20 代币余额。
+
+3. 功能模块与实现细节
+
+3.1 钱包连接模块
+依赖: Ethers.js 或 Web3.js
+
+实现步骤:
+
+创建一个“连接钱包”按钮。
+
+点击按钮时，调用 window.ethereum.request({ method: 'eth_requestAccounts' })。
+
+使用 provider.getSigner() 获取当前用户的钱包地址。
+
+处理可能的错误，如 MetaMask 未安装或用户拒绝连接。
+
+设置事件监听，监听 accountsChanged 和 chainChanged 事件，以便在用户切换账户或网络时更新 UI。
+
+3.2 钱包信息展示模块
+依赖: Ethers.js 或 Web3.js
+
+实现步骤:
+
+钱包地址: 从 provider.getSigner() 获取地址，并显示。可以格式化地址，如 0xabc...xyz。
+
+主网余额: 调用 provider.getBalance(address) 获取余额。
+
+当前网络: 调用 provider.getNetwork() 获取网络 ID 和名称，并显示。
+
+3.3 交易历史查询模块
+依赖: Etherscan API
+
+实现步骤:
+
+注册 Etherscan 账户并获取 API Key。
+
+构建 API 请求 URL。例如：
+https://api.etherscan.io/api?module=account&action=txlist&address=<wallet_address>&startblock=0&endblock=99999999&sort=desc&apikey=<your_api_key>
+
+使用 fetch 或 axios 发起 GET 请求。
+
+处理返回的 JSON 数据，并提取关键信息，如 hash、from、to、value 和 timeStamp。
+
+在前端以列表形式展示，并对时间戳进行格式化。
+
+3.4 代币余额查询模块
+依赖: Etherscan API
+
+实现步骤:
+
+使用 Etherscan 的 tokenlist API 来获取 ERC-20 代币余额。
+
+构建请求 URL。例如：
+https://api.etherscan.io/api?module=account&action=tokenlist&address=<wallet_address>&apikey=<your_api_key>
+
+解析 JSON 响应，获取所有代币信息，包括 tokenName、tokenSymbol 和 balance。
+
+在前端以列表或卡片形式展示代币信息。
