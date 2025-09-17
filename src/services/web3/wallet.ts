@@ -90,6 +90,33 @@ export class WalletService {
   }
 
   /**
+   * Switch to a different network
+   */
+  async switchNetwork(chainId: number) {
+    // Find the network config
+    const networkKey = Object.keys(SUPPORTED_NETWORKS).find(
+      (key) => SUPPORTED_NETWORKS[key].chainId === chainId
+    );
+
+    if (!networkKey) {
+      throw new Error(`Unsupported network with chainId: ${chainId}`);
+    }
+
+    const networkConfig = SUPPORTED_NETWORKS[networkKey];
+
+    await web3Provider.switchNetwork(chainId, networkConfig.metamaskConfig);
+    // Update API for the new network
+    this.updateAPIForNetwork(chainId);
+  }
+
+  /**
+   * Add a new network to MetaMask
+   */
+  async addNetwork(networkConfig: any) {
+    await web3Provider.addNetwork(networkConfig);
+  }
+
+  /**
    * Remove event listeners
    */
   removeEventListeners() {

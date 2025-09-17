@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Button, LoadingSpinner } from '@/components/ui';
+import { Card, Button, LoadingSpinner, NetworkSwitcher } from '@/components/ui';
 import { TransactionList } from '@/components/transaction';
 import { TokenList } from '@/components/token';
 import { useWallet } from '@/hooks/useWallet';
@@ -17,7 +17,15 @@ const Dashboard: React.FC = () => {
     error,
     connect,
     disconnect,
+    switchNetwork,
   } = useWallet();
+
+  const clearError = () => {
+    // 这里可以添加清除错误的逻辑
+    // 由于 error 来自 Redux store，我们需要通过 dispatch 清除
+    // 暂时通过刷新页面来清除错误
+    window.location.reload();
+  };
 
   const {
     transactions,
@@ -105,14 +113,23 @@ const Dashboard: React.FC = () => {
               </Card>
 
               <Card title='Network'>
-                <div className='space-y-2'>
-                  <p className='text-sm text-gray-600'>Current Network</p>
-                  <p className='text-lg font-semibold text-gray-900'>
-                    {network?.name || 'Unknown'}
-                  </p>
-                  <p className='text-sm text-gray-500'>
-                    Chain ID: {network?.chainId}
-                  </p>
+                <div className='space-y-4'>
+                  <div className='space-y-2'>
+                    <p className='text-sm text-gray-600'>Current Network</p>
+                    <p className='text-lg font-semibold text-gray-900'>
+                      {network?.name || 'Unknown'}
+                    </p>
+                    <p className='text-sm text-gray-500'>
+                      Chain ID: {network?.chainId}
+                    </p>
+                  </div>
+                  <NetworkSwitcher
+                    currentChainId={network?.chainId || 1}
+                    onSwitchNetwork={switchNetwork}
+                    isLoading={isLoading}
+                    error={error}
+                    onClearError={clearError}
+                  />
                 </div>
               </Card>
 
