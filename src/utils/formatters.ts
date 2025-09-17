@@ -1,4 +1,4 @@
-import { ethers } from 'ethers';
+import { formatUnits } from 'ethers';
 
 /**
  * Format wallet address to show first 6 and last 4 characters
@@ -13,7 +13,7 @@ export const formatAddress = (address: string): string => {
  */
 export const formatEther = (wei: string): string => {
   try {
-    return ethers.formatEther(wei);
+    return formatUnits(wei, '18');
   } catch (error) {
     console.error('Error formatting ether:', error);
     return '0';
@@ -25,10 +25,10 @@ export const formatEther = (wei: string): string => {
  */
 export const formatTokenBalance = (
   balance: string,
-  decimals: number
+  decimals: string
 ): string => {
   try {
-    return ethers.formatUnits(balance, decimals);
+    return formatUnits(balance, decimals);
   } catch (error) {
     console.error('Error formatting token balance:', error);
     return '0';

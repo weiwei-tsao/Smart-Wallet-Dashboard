@@ -1,8 +1,10 @@
 import React from 'react';
 import { Card, Button, LoadingSpinner } from '@/components/ui';
 import { TransactionList } from '@/components/transaction';
+import { TokenList } from '@/components/token';
 import { useWallet } from '@/hooks/useWallet';
 import { useTransactions } from '@/hooks/useTransactions';
+import { useTokens } from '@/hooks/useTokens';
 import { formatAddress, formatEther } from '@/utils/formatters';
 
 const Dashboard: React.FC = () => {
@@ -23,6 +25,13 @@ const Dashboard: React.FC = () => {
     error: transactionsError,
     fetchTransactions,
   } = useTransactions();
+
+  const {
+    tokens,
+    isLoading: tokensLoading,
+    error: tokensError,
+    fetchTokens,
+  } = useTokens();
 
   const handleConnect = () => {
     connect();
@@ -122,6 +131,18 @@ const Dashboard: React.FC = () => {
                       Disconnect
                     </Button>
                   </div>
+                </Card>
+              </div>
+
+              {/* Token Balances Section */}
+              <div className='md:col-span-2 lg:col-span-3'>
+                <Card>
+                  <TokenList
+                    tokens={tokens}
+                    isLoading={tokensLoading}
+                    error={tokensError}
+                    onRetry={fetchTokens}
+                  />
                 </Card>
               </div>
 
