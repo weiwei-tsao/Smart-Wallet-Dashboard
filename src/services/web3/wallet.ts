@@ -1,8 +1,20 @@
 import { web3Provider } from './provider';
-import { etherscanAPI } from '../api/etherscan';
+import { EtherscanAPI } from '../api/etherscan';
 import { Transaction, Token } from '@/types';
+import { SUPPORTED_NETWORKS } from '@/constants/networks';
+import { SUPPORTED_CHAIN_IDS } from '@/constants/api';
 
 export class WalletService {
+  private etherscanAPI: EtherscanAPI;
+
+  constructor() {
+    const apiKey = import.meta.env.VITE_ETHERSCAN_API_KEY || '';
+    this.etherscanAPI = new EtherscanAPI(
+      apiKey,
+      SUPPORTED_CHAIN_IDS.ETHEREUM_MAINNET
+    );
+  }
+
   /**
    * Connect wallet and get basic info
    */
@@ -10,6 +22,9 @@ export class WalletService {
     const address = await web3Provider.connectWallet();
     const balance = await web3Provider.getBalance(address);
     const network = await web3Provider.getNetwork();
+
+    // Update API based on current network
+    this.updateAPIForNetwork(network.chainId);
 
     return {
       address,
@@ -19,17 +34,34 @@ export class WalletService {
   }
 
   /**
+   * Update API instance based on network
+   */
+  private updateAPIForNetwork(chainId: number) {
+    // 检查是否支持该链ID
+    const supportedChainIds = Object.values(SUPPORTED_CHAIN_IDS);
+    if (!supportedChainIds.includes(chainId)) {
+      console.warn(
+        `Unsupported network with chainId: ${chainId}. Using Ethereum Mainnet.`
+      );
+      chainId = SUPPORTED_CHAIN_IDS.ETHEREUM_MAINNET;
+    }
+
+    // 更新API的链ID
+    this.etherscanAPI.updateChainId(chainId);
+  }
+
+  /**
    * Get wallet transactions
    */
   async getTransactions(address: string): Promise<Transaction[]> {
-    return await etherscanAPI.getTransactions(address);
+    return await this.etherscanAPI.getTransactions(address);
   }
 
   /**
    * Get wallet token balances
    */
   async getTokenBalances(address: string): Promise<Token[]> {
-    return await etherscanAPI.getTokenBalances(address);
+    return await this.etherscanAPI.getTokenBalances(address);
   }
 
   /**

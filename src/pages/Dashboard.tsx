@@ -99,7 +99,7 @@ const Dashboard: React.FC = () => {
                 <div className='space-y-2'>
                   <p className='text-sm text-gray-600'>ETH Balance</p>
                   <p className='text-2xl font-bold text-gray-900'>
-                    {formatEther(balance!)} ETH
+                    {balance || '0'} ETH
                   </p>
                 </div>
               </Card>
