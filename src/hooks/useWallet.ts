@@ -79,7 +79,7 @@ export const useWallet = () => {
             );
           }
         },
-        (chainId: string) => {
+        (_chainId: string) => {
           // Chain changed, refresh network info
           refreshNetwork();
         }

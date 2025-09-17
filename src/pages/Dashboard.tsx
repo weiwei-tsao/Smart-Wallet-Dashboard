@@ -1,6 +1,8 @@
 import React from 'react';
 import { Card, Button, LoadingSpinner } from '@/components/ui';
+import { TransactionList } from '@/components/transaction';
 import { useWallet } from '@/hooks/useWallet';
+import { useTransactions } from '@/hooks/useTransactions';
 import { formatAddress, formatEther } from '@/utils/formatters';
 
 const Dashboard: React.FC = () => {
@@ -14,6 +16,13 @@ const Dashboard: React.FC = () => {
     connect,
     disconnect,
   } = useWallet();
+
+  const {
+    transactions,
+    isLoading: transactionsLoading,
+    error: transactionsError,
+    fetchTransactions,
+  } = useTransactions();
 
   const handleConnect = () => {
     connect();
@@ -113,6 +122,19 @@ const Dashboard: React.FC = () => {
                       Disconnect
                     </Button>
                   </div>
+                </Card>
+              </div>
+
+              {/* Transaction History Section */}
+              <div className='md:col-span-2 lg:col-span-3'>
+                <Card>
+                  <TransactionList
+                    transactions={transactions}
+                    currentAddress={address!}
+                    isLoading={transactionsLoading}
+                    error={transactionsError}
+                    onRetry={fetchTransactions}
+                  />
                 </Card>
               </div>
             </div>

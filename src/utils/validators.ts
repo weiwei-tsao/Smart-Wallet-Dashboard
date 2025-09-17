@@ -39,5 +39,5 @@ export const isValidChainId = (chainId: number): boolean => {
  * Validate API key format
  */
 export const isValidApiKey = (apiKey: string): boolean => {
-  return apiKey && apiKey.length > 10 && /^[a-zA-Z0-9]+$/.test(apiKey);
+  return Boolean(apiKey && apiKey.length > 10 && /^[a-zA-Z0-9]+$/.test(apiKey));
 };

@@ -37,7 +37,7 @@ export class Web3Provider {
 
     try {
       // Request account access
-      await window.ethereum.request({ method: 'eth_requestAccounts' });
+      await window.ethereum!.request({ method: 'eth_requestAccounts' });
 
       // Get signer
       const signer = await this.provider!.getSigner();
@@ -88,7 +88,6 @@ export class Web3Provider {
     return {
       chainId: Number(network.chainId),
       name: network.name || 'Unknown',
-      ensAddress: network.ensAddress,
     };
   }
 
