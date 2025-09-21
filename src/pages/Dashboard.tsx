@@ -6,19 +6,36 @@ import { useWallet } from '@/hooks/useWallet';
 import { useTransactions } from '@/hooks/useTransactions';
 import { useTokens } from '@/hooks/useTokens';
 import { formatAddress, formatEther } from '@/utils/formatters';
+import { Transaction, Token } from '@/types';
 
-const Dashboard: React.FC = () => {
+interface DashboardProps {
+  address?: string;
+  initialTransactions?: Transaction[];
+  initialTokens?: Token[];
+  error?: string;
+}
+
+const Dashboard: React.FC<DashboardProps> = ({
+  address: propAddress,
+  initialTransactions,
+  initialTokens,
+  error: propError,
+}) => {
   const {
     isConnected,
-    address,
+    address: walletAddress,
     balance,
     network,
     isLoading,
-    error,
+    error: walletError,
     connect,
     disconnect,
     switchNetwork,
   } = useWallet();
+
+  // 使用传入的地址或钱包地址
+  const displayAddress = propAddress || walletAddress;
+  const isConnectedOrHasAddress = isConnected || !!propAddress;
 
   const clearError = () => {
     // 这里可以添加清除错误的逻辑
@@ -40,6 +57,12 @@ const Dashboard: React.FC = () => {
     error: tokensError,
     fetchTokens,
   } = useTokens();
+
+  // 使用 SSR 传入的数据或 hook 获取的数据
+  const displayTransactions = initialTransactions || transactions;
+  const displayTokens = initialTokens || tokens;
+  const displayError =
+    propError || walletError || transactionsError || tokensError;
 
   const handleConnect = () => {
     connect();
@@ -74,7 +97,7 @@ const Dashboard: React.FC = () => {
             </p>
           </div>
 
-          {!isConnected ? (
+          {!isConnectedOrHasAddress ? (
             <Card className='text-center'>
               <h2 className='text-2xl font-semibold text-gray-800 mb-4'>
                 Connect Your Wallet
@@ -86,9 +109,9 @@ const Dashboard: React.FC = () => {
               <Button onClick={handleConnect} size='lg'>
                 Connect MetaMask
               </Button>
-              {error && (
+              {displayError && (
                 <div className='mt-4 p-4 bg-red-50 border border-red-200 rounded-lg'>
-                  <p className='text-red-600'>{error}</p>
+                  <p className='text-red-600'>{displayError}</p>
                 </div>
               )}
             </Card>
@@ -98,7 +121,7 @@ const Dashboard: React.FC = () => {
                 <div className='space-y-2'>
                   <p className='text-sm text-gray-600'>Address</p>
                   <p className='font-mono text-sm bg-gray-100 p-2 rounded'>
-                    {formatAddress(address!)}
+                    {formatAddress(displayAddress!)}
                   </p>
                 </div>
               </Card>
@@ -127,7 +150,7 @@ const Dashboard: React.FC = () => {
                     currentChainId={network?.chainId || 1}
                     onSwitchNetwork={switchNetwork}
                     isLoading={isLoading}
-                    error={error}
+                    error={walletError}
                     onClearError={clearError}
                   />
                 </div>
@@ -155,7 +178,7 @@ const Dashboard: React.FC = () => {
               <div className='md:col-span-2 lg:col-span-3'>
                 <Card>
                   <TokenList
-                    tokens={tokens}
+                    tokens={displayTokens}
                     isLoading={tokensLoading}
                     error={tokensError}
                     onRetry={fetchTokens}
@@ -167,8 +190,8 @@ const Dashboard: React.FC = () => {
               <div className='md:col-span-2 lg:col-span-3'>
                 <Card>
                   <TransactionList
-                    transactions={transactions}
-                    currentAddress={address!}
+                    transactions={displayTransactions}
+                    currentAddress={displayAddress!}
                     isLoading={transactionsLoading}
                     error={transactionsError}
                     onRetry={fetchTransactions}

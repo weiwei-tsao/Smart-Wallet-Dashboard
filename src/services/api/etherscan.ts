@@ -35,7 +35,7 @@ export class EtherscanAPI {
       // 检查API密钥
       if (!this.apiKey || this.apiKey === 'YourEtherscanV2APIKeyHere') {
         throw new Error(
-          'Etherscan API key is not configured. Please set VITE_ETHERSCAN_API_KEY in your .env file'
+          'Etherscan API key is not configured. Please set ETHERSCAN_API_KEY in your .env.local file'
         );
       }
 
@@ -86,7 +86,7 @@ export class EtherscanAPI {
       // 检查API密钥
       if (!this.apiKey || this.apiKey === 'YourEtherscanV2APIKeyHere') {
         throw new Error(
-          'Etherscan API key is not configured. Please set VITE_ETHERSCAN_API_KEY in your .env file'
+          'Etherscan API key is not configured. Please set ETHERSCAN_API_KEY in your .env.local file'
         );
       }
 
@@ -141,5 +141,5 @@ export class EtherscanAPI {
 }
 
 // Create singleton instance
-const apiKey = import.meta.env.VITE_ETHERSCAN_API_KEY || '';
+const apiKey = process.env.ETHERSCAN_API_KEY || '';
 export const etherscanAPI = new EtherscanAPI(apiKey);

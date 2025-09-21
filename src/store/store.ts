@@ -1,21 +1,25 @@
 import { configureStore } from '@reduxjs/toolkit';
+import { createWrapper } from 'next-redux-wrapper';
 import walletReducer from './slices/walletSlice';
 import transactionReducer from './slices/transactionSlice';
 import tokenReducer from './slices/tokenSlice';
 
-export const store = configureStore({
-  reducer: {
-    wallet: walletReducer,
-    transaction: transactionReducer,
-    token: tokenReducer,
-  },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: ['persist/PERSIST'],
-      },
-    }),
-});
+const makeStore = () =>
+  configureStore({
+    reducer: {
+      wallet: walletReducer,
+      transaction: transactionReducer,
+      token: tokenReducer,
+    },
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        serializableCheck: {
+          ignoredActions: ['persist/PERSIST'],
+        },
+      }),
+  });
 
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
+export const wrapper = createWrapper(makeStore);
+
+export type RootState = ReturnType<ReturnType<typeof makeStore>['getState']>;
+export type AppDispatch = ReturnType<typeof makeStore>['dispatch'];
