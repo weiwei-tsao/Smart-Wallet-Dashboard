@@ -11,6 +11,7 @@ const nextConfig = {
   // 配置环境变量
   env: {
     CUSTOM_KEY: process.env.CUSTOM_KEY,
+    ETHERSCAN_API_KEY: process.env.ETHERSCAN_API_KEY,
   },
   // 配置重写规则，用于 API 代理
   async rewrites() {
