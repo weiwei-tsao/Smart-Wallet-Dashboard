@@ -1,0 +1,89 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database for Testing
+  postgres-test:
+    image: postgres:15-alpine
+    container_name: smart-wallet-postgres-test
+    environment:
+      POSTGRES_DB: smart_wallet_dashboard_test
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_password
+    ports:
+      - '5433:5432'
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+    networks:
+      - smart-wallet-test-network
+    healthcheck:
+      test:
+        ['CMD-SHELL', 'pg_isready -U test_user -d smart_wallet_dashboard_test']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache for Testing
+  redis-test:
+    image: redis:7-alpine
+    container_name: smart-wallet-redis-test
+    ports:
+      - '6380:6379'
+    volumes:
+      - redis_test_data:/data
+    networks:
+      - smart-wallet-test-network
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend BFF Service for Testing
+  bff-test:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: smart-wallet-bff-test
+    environment:
+      - NODE_ENV=test
+      - PORT=3002
+      - REDIS_URL=redis://redis-test:6379
+      - DATABASE_URL=postgresql://test_user:test_password@postgres-test:5432/smart_wallet_dashboard_test
+      - ETHERSCAN_API_KEY=${ETHERSCAN_API_KEY:-test_key}
+      - ETHERSCAN_BASE_URL=https://api.etherscan.io/v2/api
+      - CORS_ORIGIN=http://localhost:3000
+    ports:
+      - '3002:3002'
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+      redis-test:
+        condition: service_healthy
+    networks:
+      - smart-wallet-test-network
+    restart: unless-stopped
+
+  # Frontend Next.js App for Testing
+  web-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: smart-wallet-web-test
+    environment:
+      - NODE_ENV=test
+      - NEXT_PUBLIC_API_BASE_URL=http://localhost:3002/api
+    ports:
+      - '3003:3000'
+    depends_on:
+      - bff-test
+    networks:
+      - smart-wallet-test-network
+    restart: unless-stopped
+
+volumes:
+  postgres_test_data:
+  redis_test_data:
+
+networks:
+  smart-wallet-test-network:
+    driver: bridge
