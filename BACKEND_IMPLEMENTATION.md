@@ -224,4 +224,107 @@ node test-api.js
 - [x] 健康检查端点
 - [x] 速率限制和安全中间件
 
+## 🐳 Docker 容器化配置
+
+### 容器服务架构
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Frontend      │    │   BFF Service   │    │   External APIs │
+│   (Next.js)     │◄──►│   (Express)     │◄──►│   (Etherscan)   │
+│   Port: 3000    │    │   Port: 3001    │    │                 │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+                              │
+                              ▼
+                       ┌─────────────────┐
+                       │   PostgreSQL    │
+                       │   Port: 5432    │
+                       │   (Favorites)   │
+                       └─────────────────┘
+                              │
+                              ▼
+                       ┌─────────────────┐
+                       │     Redis       │
+                       │   Port: 6379    │
+                       │   (Caching)     │
+                       └─────────────────┘
+```
+
+### 容器启动命令
+
+#### 1. 数据库和缓存服务
+
+```bash
+# PostgreSQL 容器
+docker run --name smart-wallet-postgres \
+  -e POSTGRES_DB=smart_wallet_dashboard \
+  -e POSTGRES_USER=username \
+  -e POSTGRES_PASSWORD=password \
+  -p 5432:5432 \
+  -d postgres:15
+
+# Redis 容器
+docker run --name smart-wallet-redis \
+  -p 6379:6379 \
+  -d redis:7
+```
+
+#### 2. 使用 Docker Compose (推荐)
+
+```bash
+# 启动所有服务
+docker-compose up -d
+
+# 查看服务状态
+docker-compose ps
+
+# 停止所有服务
+docker-compose down
+```
+
+### 环境变量配置
+
+#### 开发环境 (.env)
+
+```bash
+# 本地开发配置
+DATABASE_URL=postgresql://username:password@localhost:5432/smart_wallet_dashboard
+REDIS_URL=redis://localhost:6379
+ETHERSCAN_API_KEY=your_actual_api_key_here
+```
+
+#### Docker 环境
+
+```bash
+# Docker 容器间通信
+DATABASE_URL=postgresql://username:password@postgres:5432/smart_wallet_dashboard
+REDIS_URL=redis://redis:6379
+```
+
+### 数据持久化
+
+- **PostgreSQL 数据**: 存储在 Docker volume `postgres_data`
+- **Redis 数据**: 存储在 Docker volume `redis_data`
+- **应用代码**: 通过 Dockerfile 构建到容器中
+
+### 容器管理
+
+```bash
+# 查看运行状态
+docker ps
+
+# 查看服务日志
+docker logs smart-wallet-postgres
+docker logs smart-wallet-redis
+docker logs smart-wallet-bff
+
+# 进入容器调试
+docker exec -it smart-wallet-postgres psql -U username -d smart_wallet_dashboard
+docker exec -it smart-wallet-redis redis-cli
+
+# 清理资源
+docker-compose down -v  # 删除 volumes
+docker system prune     # 清理未使用的资源
+```
+
 这个后端 BFF 服务完全符合 V2.0 需求文档的要求，为前端提供了统一、高效的数据接口，并具备良好的可扩展性和维护性。
