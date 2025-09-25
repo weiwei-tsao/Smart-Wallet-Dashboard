@@ -24,9 +24,10 @@ A modern Web3 wallet dashboard built with React, TypeScript, and Vite. Connect y
 
 ### Prerequisites
 
-- Node.js 16+
+- Node.js 18+
 - npm or yarn
 - MetaMask browser extension
+- Etherscan API key (免费)
 
 ### Installation
 
@@ -46,7 +47,8 @@ npm install
 3. Set up environment variables
 
 ```bash
-cp env.example .env.local
+# 创建环境变量文件
+cp .env.template .env.local
 ```
 
 4. Add your Etherscan API key to `.env.local`
@@ -62,6 +64,31 @@ npm run dev
 ```
 
 6. Open your browser and navigate to `http://localhost:3000`
+
+## 🚀 快速部署
+
+### 一键部署到 Vercel
+
+```bash
+npm run deploy:vercel
+```
+
+### 一键部署到 Netlify
+
+```bash
+npm run deploy:netlify
+```
+
+### 手动构建
+
+```bash
+npm run build
+# 将 dist 文件夹上传到任何静态托管服务
+```
+
+### 详细部署指南
+
+查看 [DEPLOYMENT.md](./DEPLOYMENT.md) 获取完整的部署说明。
 
 ## Project Structure
 

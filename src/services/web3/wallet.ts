@@ -38,7 +38,7 @@ export class WalletService {
    */
   private updateAPIForNetwork(chainId: number) {
     // 检查是否支持该链ID
-    const supportedChainIds = Object.values(SUPPORTED_CHAIN_IDS);
+    const supportedChainIds = Object.values(SUPPORTED_CHAIN_IDS) as number[];
     if (!supportedChainIds.includes(chainId)) {
       console.warn(
         `Unsupported network with chainId: ${chainId}. Using Ethereum Mainnet.`

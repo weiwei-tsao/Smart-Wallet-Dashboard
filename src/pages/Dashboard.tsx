@@ -5,7 +5,7 @@ import { TokenList } from '@/components/token';
 import { useWallet } from '@/hooks/useWallet';
 import { useTransactions } from '@/hooks/useTransactions';
 import { useTokens } from '@/hooks/useTokens';
-import { formatAddress, formatEther } from '@/utils/formatters';
+import { formatAddress } from '@/utils/formatters';
 
 const Dashboard: React.FC = () => {
   const {

@@ -1,0 +1,34 @@
+{
+  "version": 2,
+  "name": "smart-wallet-dashboard",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ],
+  "env": {
+    "VITE_APP_NAME": "Smart Wallet Dashboard",
+    "VITE_APP_VERSION": "1.0.0",
+    "VITE_APP_ENV": "production",
+    "VITE_DEFAULT_NETWORK": "mainnet",
+    "VITE_DEBUG": "false"
+  },
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "installCommand": "npm install",
+  "framework": "vite"
+}
